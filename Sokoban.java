@@ -4,9 +4,15 @@ import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
+
+import java.io.File; 
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import java.util.Arrays;
@@ -20,13 +26,15 @@ public class Sokoban {
     private static final int width = 7;
     private static final int height = 5;
     private static final int boxQuantity = 5;
-    private static final String path = "Sokoban\\";
-    private static final String extension = ".png";
-    private static final String player = path + "player" + extension;
+    private final String path = "Sprites\\Original\\";
+    private final String extension = ".png";
     private final String barrier = path + "black-square" + extension;
-    private static final String background = path + "white-square" + extension;
-    private static final String box = path + "box" + extension;
-    private static final String destination = path + "destination" + extension;
+    private final String background = path + "white-square" + extension;
+    private final String logo = path + "logo" + extension;
+
+    private String player = path + "flushed_face" + extension;
+    private String box = path + "box" + extension;
+    private String destination = path + "destination" + extension;
 
     private static String[][] world = new String[height][width];
     private static int[] playerCoord;
@@ -38,6 +46,51 @@ public class Sokoban {
     public static void main(String[] args)
     {
         new Sokoban();
+    }
+
+    private void GenerateCombinedImages()
+    {
+        File file = new File("Sprites/Combined");
+        if (!file.exists())
+        {
+            file.mkdir();
+        }
+        try
+        {
+            final String newPath = "Sprites\\Combined\\";
+            final String newPlayer = newPath + "player" + extension;
+            final String newBox = newPath + "box" + extension;
+            final String newDestination = newPath + "destination" + extension;
+            ImageIO.write(CombineImage(background, player), "PNG", new File(newPlayer));
+            ImageIO.write(CombineImage(background, box), "PNG", new File(newBox));
+            ImageIO.write(CombineImage(background, destination), "PNG", new File(newDestination));
+            player = newPlayer;
+            box = newBox;
+            destination = newDestination;
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private BufferedImage CombineImage(String... paths)
+    {
+        BufferedImage combinedImage = new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = combinedImage.createGraphics();
+        for (String path : paths)
+        {
+            try {
+                BufferedImage image = ImageIO.read(getClass().getClassLoader().getResource(path));
+                graphics2D.drawImage(image, 0, 0, null);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return combinedImage;
     }
 
     private int[] RandomCoord()
@@ -87,7 +140,7 @@ public class Sokoban {
     {
         window = new JFrame();
         window.setTitle("Sokoban");
-        window.setIconImage(Toolkit.getDefaultToolkit().getImage(box));
+        window.setIconImage(Toolkit.getDefaultToolkit().getImage(logo));
         window.setSize(((width + 2) * 50) + 16, ((height + 2) * 50) + 39);
         window.setLocationRelativeTo(null);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -186,6 +239,7 @@ public class Sokoban {
 
     public Sokoban()
     {
+        GenerateCombinedImages();
         RenderWindow();
         ProceduralGeneration();
         RenderWorld();
