@@ -1,3 +1,13 @@
+/*
+GitHub: https://github.com/BenjaminThio
+Instagram: https://www.instagram.com/benjamin_thio70
+
+How to play:
+1. Compile and run the program.
+2. Press w, a, s, d to move.
+3. Press r key to restart the game.
+*/
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -34,7 +44,7 @@ public class Sokoban {
 
     private static String player = path + "flushed-face" + extension;
     private static String box = path + "box" + extension;
-    private static String destination = path + "milky-way" + extension;
+    private static String destination = path + "destination" + extension;
 
     private static int width = 7;
     private static int height = 5;
