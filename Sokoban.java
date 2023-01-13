@@ -9,10 +9,10 @@ import java.awt.Graphics2D;
 
 import java.io.File; 
 import java.io.IOException;
+import javax.imageio.ImageIO;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import java.util.Arrays;
@@ -23,19 +23,22 @@ import java.util.Random;
 public class Sokoban {
     private static JFrame window;
 
-    private static final int width = 7;
-    private static final int height = 5;
-    private static final int boxQuantity = 5;
-    private final String path = "Sprites\\Original\\";
-    private final String extension = ".png";
-    private final String barrier = path + "black-square" + extension;
-    private final String background = path + "white-square" + extension;
-    private final String logo = path + "logo" + extension;
+    private static final int maxWidth = 25;
+    private static final int maxHeight = 12;
+    
+    private static final String path = "Sprites\\Original\\";
+    private static final String extension = ".png";
+    private static final String barrier = path + "black-square" + extension;
+    private static final String background = path + "white-square" + extension;
+    private static final String logo = path + "logo" + extension;
 
-    private String player = path + "flushed_face" + extension;
-    private String box = path + "box" + extension;
-    private String destination = path + "destination" + extension;
+    private static String player = path + "flushed-face" + extension;
+    private static String box = path + "box" + extension;
+    private static String destination = path + "milky-way" + extension;
 
+    private static int width = 7;
+    private static int height = 5;
+    private static int boxQuantity = 5;
     private static String[][] world = new String[height][width];
     private static int[] playerCoord;
     private static int[][] boxCoords;
@@ -45,7 +48,27 @@ public class Sokoban {
 
     public static void main(String[] args)
     {
+        if (width > maxWidth)
+        {
+            print("The max width is `" + Integer.toString(maxWidth) + "`!");
+            return;
+        }
+        else if (height > maxHeight)
+        {
+            print("The max height is `" + Integer.toString(maxHeight) + "`!");
+            return;
+        }
+        if (boxQuantity > width * height / 2)
+        {
+            print("The max box quantity is `" + Integer.toString(width * height / 2) + "`!");
+            boxQuantity = width * height / 2;
+        }
         new Sokoban();
+    }
+
+    private static void print(Object object)
+    {
+        System.out.println(object);
     }
 
     private void GenerateCombinedImages()
@@ -77,12 +100,12 @@ public class Sokoban {
     private BufferedImage CombineImage(String... paths)
     {
         BufferedImage combinedImage = new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D graphics2D = combinedImage.createGraphics();
+        Graphics2D graphics2d = combinedImage.createGraphics();
         for (String path : paths)
         {
             try {
                 BufferedImage image = ImageIO.read(getClass().getClassLoader().getResource(path));
-                graphics2D.drawImage(image, 0, 0, null);
+                graphics2d.drawImage(image, 0, 0, null);
             }
             catch (IOException e)
             {
@@ -95,6 +118,10 @@ public class Sokoban {
 
     private int[] RandomCoord()
     {
+        if (availableCoords.size() == 1)
+        {
+            return availableCoords.get(0);
+        }
         Random random = new Random();
         int randomIndex = random.nextInt(availableCoords.size());
         int[] randomCoord = availableCoords.get(randomIndex);
